@@ -1,4 +1,4 @@
-let apiURL = `http://localhost:3000/api/products`;
+const apiURL = `http://localhost:3000/api/products`;
 
 // fetch tous les produits
 fetch(apiURL)
