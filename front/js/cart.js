@@ -1,100 +1,126 @@
-let cart = [];
-let item = [];
-//let item = {};
+let cart = getCart(); // √
 
-const itemsDOM = document.querySelector("#cart__items");
-const itemDOM = document.querySelector("#cart__item");
-const itemImgDOM = document.querySelector(".cart__item__img");
-const nbrArticlesDOM = document.querySelector("#totalQuantity");
-const itemsTotalDOM = document.querySelector("#totalQuantity");
-const totalPriceDOM = document.querySelector("#totalPrice");
+const itemDOM = document.querySelector("#cart__items");
 
-getCart(cart);
+displayItems(cart); // √
+inputQuantityEvent(); // √
+calcTotalQuantity(cart); // √
+calcTotalPrice(cart); // √
+deleteEvent(cart); // √
 
-for (i = 0; i < cart.length; i++) {
-  item = cart[i];
-  //console.log(item);
-  itemsDOM.insertAdjacentHTML(
-    "afterbegin",
-    `<article class="cart__item" data-id="${item.id}" data-color="${item.color}">
-                <div class="cart__item__img">
-                  <img src="${item.image}" alt="${item.altImage}">
-                </div>
-                <div class="cart__item__content">
-                  <div class="cart__item__content__description">
-                    <h2>${item.name}</h2>
-                    <p>${item.color}</p>
-                    <p>${item.price} €</p>
-                  </div>
-                  <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                      <p>Qté : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${item.quantity}">
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
-                    </div>
-                  </div>
-                </div>
-              </article>`
-  );
-}
-
-//Somme du total de toutes les quantitées de tous les articles + le total du prix.
-let totalQuantity = 0;
-let totalPrice = 0;
-for (i = 0; i < cart.length; i++) {
-  totalQuantity += cart[i].quantity;
-  totalPrice += cart[i].quantity * cart[i].price;
-}
-nbrArticlesDOM.insertAdjacentHTML("afterbegin", `${totalQuantity}`);
-totalPriceDOM.insertAdjacentHTML("afterbegin", `${totalPrice}`);
-
-//Affichage de input pour la quantité de chaque article
-const inputQuantityDOM = document.querySelectorAll(".itemQuantity");
-
-let inputQuantity = 0;
-// for (i = 0; i < inputQuantityDOM.value.length; i++) {
-//   inputQuantity += inputQuantityDOM.value[i];
-//   console.log(inputQuantityDOM.value[i]);
-// }
-
-itemQuantity.add.addEventListener("change", function () {
-  inputQuantity = inputQuantityDOM.value;
-  //console.log(inputQuantity);
-  console.log(inputQuantityDOM);
-});
-
-//deux méthodes pour avoir la quantité de chaque article de manière dynamique.
-//#1 on lit l'input de chaque item et on doit muliplier l'input.quantity * item.price.
-//#2 on sauve a chaque changement de l'input quantité le cart et on a juste a faire la muliplicaton item.quantity * item.price
-
-//Pour récupérer ce qu'il y a dans le cart.
+//////////////////////////////
+// Récupère le panier en array
 function getCart() {
-  cart = JSON.parse(localStorage.getItem("cart"));
-  //console.log(cart);
-  //   if (cart === null) {
-  //     return [];
-  //   } else {
-  //     return JSON.parse(cart);
-  //   }
+  return JSON.parse(localStorage.getItem("cartItem"));
 }
 
-//récupere tout le contenu du locastorage.
+////////////////////////////////
+// Affiche le panier dans l'HTML
+function displayItems(cart) {
+  itemDOM.innerHTML = "";
+  if (cart === null) {
+    itemDOM.innerHTML = "<h2>Désolé, votre panier est vide!</h2>";
+    console.log("le pannier est vide");
+    return;
+  }
+  for (itm = 0; itm < cart.length; itm++) {
+    item = cart[itm];
+    itemDOM.insertAdjacentHTML(
+      "beforeend",
+      `<article class="cart__item" data-id="${item.id}" data-color="${item.color}">
+                            <div class="cart__item__img">
+                              <img src="${item.image}" alt="${item.altImage}">
+                            </div>
+                            <div class="cart__item__content">
+                              <div class="cart__item__content__description">
+                                <h2>${item.name}</h2>
+                                <p>${item.color}</p>
+                                <p>${item.price} €</p>
+                              </div>
+                              <div class="cart__item__content__settings">
+                                <div class="cart__item__content__settings__quantity">
+                                  <p>Qté : </p>
+                                  <input type="number" class="itemQuantity" data-id="${item.id}" data-color="${item.color}"  name="itemQuantity" min="1" max="100" value="${item.quantity}">
+                                </div>
+                                <br>
+                                <div class="cart__item__content__settings__delete">
+                                  <p class="deleteItem" data-id="${item.id}" data-color="${item.color}">Supprimer</p>
+                                </div>
+                              </div>
+                            </div>
+                          </article>`
+    );
+  }
+}
 
-//form => validation regex
+////////////////////////////////////////////////
+// Met à jour les quantités dans le localstorage
+function inputQuantityEvent() {
+  let inputsDOM = document.querySelectorAll(".itemQuantity");
 
-//format pour "order button"
+  //on scanne toutes les inputs pour la quantité.
+  inputsDOM.forEach((inputDOM) => {
+    inputDOM.addEventListener("change", function (e) {
+      let newQuantity = this.value;
+      let getDataId = this.getAttribute("data-id");
+      let getDataColor = this.getAttribute("data-color");
+      let cart = getCart();
 
-/*
- * Expects request to contain:
- * contact: {
- *   firstName: string,
- *   lastName: string,
- *   address: string,
- *   city: string,
- *   email: string
- * }
- * products: [string] <-- array of product _id
- *
- */
+      //On cherche l'item qui possède la même Id et Color que l'input.
+      let foundIndex = cart.findIndex(
+        (obj) => obj.id === getDataId && obj.color === getDataColor
+      );
+      //On assigne la bonne quantité à l'item trouvé dans le cart et on sauve le cart.
+      cart[foundIndex].quantity = newQuantity;
+      localStorage.setItem("cartItem", JSON.stringify(cart));
+      location.reload(); //On réactualise la page pour afficher le changement.
+    });
+  });
+}
+
+///////////////////////////////////////////
+// Calcule le total de toutes les quantités
+function calcTotalQuantity() {
+  let totalQuantity = 0;
+  cart.forEach((item) => {
+    totalQuantity += Number(item.quantity);
+    return totalQuantity;
+  });
+  document.querySelector("#totalQuantity").innerText = `${totalQuantity}`;
+}
+
+///////////////////////////
+// Calcule le total goblal
+function calcTotalPrice() {
+  let totalPrice = 0;
+  cart.forEach((item) => {
+    totalPrice += Number(item.quantity) * Number(item.price);
+    return totalPrice;
+  });
+  document.querySelector("#totalPrice").innerText = `${totalPrice}`;
+}
+
+///////////////////////////////////////////////////////////////
+// Gestion des boutons supprimer et mise à jour du locastorage
+function deleteEvent() {
+  let btnsDeleteDOM = document.querySelectorAll(".deleteItem");
+
+  //on scanne toutes les boutons.
+  btnsDeleteDOM.forEach((btnDeleteDOM) => {
+    btnDeleteDOM.addEventListener("click", function (e) {
+      let getDataId = this.getAttribute("data-id");
+      let getDataColor = this.getAttribute("data-color");
+
+      //On cherche les items qui ne possèdent pas la même Id et Color que le bouton.
+      cart = cart.filter(
+        (obj) => !(obj.id == getDataId && obj.color == getDataColor)
+      );
+      console.log(cart);
+
+      localStorage.setItem("cartItem", JSON.stringify(cart));
+      location.reload(); //On réactualise la page pour afficher le changement.
+    });
+  });
+}
+
+//ajouter une condition lorsqu'on supprime le dernier article du panier alors on doit faire un localStorage.removeItem ou un localStorage.clear()????
