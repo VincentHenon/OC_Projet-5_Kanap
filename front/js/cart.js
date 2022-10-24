@@ -1,12 +1,25 @@
 let cart = getCart(); // √
-
-const itemDOM = document.querySelector("#cart__items");
+let formDOM = document.querySelector(".cart__order__form");
+let orderBtn = document.querySelector("#order");
 
 displayItems(cart); // √
 inputQuantityEvent(); // √
 calcTotalQuantity(cart); // √
 calcTotalPrice(cart); // √
 deleteEvent(cart); // √
+
+orderBtn.addEventListener("click", (e) => {
+  let userForm = {
+    firstName: formDOM.firstName.value,
+    lastName: formDOM.lastName.value,
+    address: formDOM.address.value,
+    city: formDOM.city.value,
+    email: formDOM.email.value,
+  };
+  console.log(userForm);
+  e.preventDefault();
+  checkingForm(this);
+});
 
 //////////////////////////////
 // Récupère le panier en array
@@ -17,8 +30,10 @@ function getCart() {
 ////////////////////////////////
 // Affiche le panier dans l'HTML
 function displayItems(cart) {
+  const itemDOM = document.querySelector("#cart__items");
   itemDOM.innerHTML = "";
-  if (cart === null) {
+
+  if (cart === null || cart.length === 0) {
     itemDOM.innerHTML = "<h2>Désolé, votre panier est vide!</h2>";
     console.log("le pannier est vide");
     return;
@@ -123,4 +138,105 @@ function deleteEvent() {
   });
 }
 
-//ajouter une condition lorsqu'on supprime le dernier article du panier alors on doit faire un localStorage.removeItem ou un localStorage.clear()????
+function checkingForm() {
+  formDOM.lastName.addEventListener("change", function () {
+    lastNameCheck(this);
+  });
+
+  formDOM.address.addEventListener("change", function () {
+    addressCheck(this);
+  });
+
+  formDOM.city.addEventListener("change", function () {
+    cityCheck(this);
+  });
+  formDOM.email.addEventListener("change", function () {
+    emailCheck(this);
+  });
+
+  formDOM.firstName.addEventListener("change", function () {
+    firstNameCheck(this);
+  });
+
+  if (
+    firstNameCheck() &&
+    lastNameCheck() &&
+    addressCheck() &&
+    cityCheck() &&
+    emailCheck()
+  ) {
+    //sending data
+  }
+}
+
+function firstNameCheck() {
+  let firstNameFormat = /^([a-zAZéèêëàâäöôüûïî']*?[ ]?)*$/;
+  let firstNameMsg = document.querySelector("#firstNameErrorMsg");
+
+  if (formDOM.firstName.value.match(firstNameFormat)) {
+    console.log(formDOM.firstName.value);
+    firstNameMsg.textContent = "Le prénom saisi semble valide.";
+    //return true;
+  } else if (
+    !formDOM.firstName.value.match(firstNameFormat) ||
+    formDOM.firstName === "" ||
+    formDOM.firstName === null
+  ) {
+    firstNameMsg.textContent = "Veuillez saisir un prénom valide.";
+    //return false;
+  }
+}
+function lastNameCheck() {
+  let lastNameFormat = /^([a-zAZéèêëàâäöôüûïî']*?[ ]?)*$/;
+  let lastNameMsg = document.querySelector("#lastNameErrorMsg");
+
+  if (formDOM.lastName.value.match(lastNameFormat)) {
+    lastNameMsg.textContent = "Le nom saisi semble valide.";
+    //return true;
+  } else {
+    lastNameMsg.textContent = "Veuillez saisir un nom valide.";
+    //return false;
+  }
+}
+
+function addressCheck() {
+  let addressFormat =
+    ///^[0-9]*+[ ]+[a-zAZéèêëàâäöôüûïî']{1}*+?[ ]+?[a-zAZéèêëàâäöôüûïî']*$/;
+    /^[0-9]$/;
+  let addressMsg = document.querySelector("#addressErrorMsg");
+
+  if (formDOM.address.value.match(addressFormat)) {
+    addressMsg.textContent = "L'adresse saisie semble valide.";
+    //return true;
+  } else {
+    addressMsg.textContent = "Veuillez saisor une adresse postale valide.";
+    //return false;
+  }
+}
+
+function cityCheck() {
+  let cityFormat = /^[a-zAZéèêëàâäöôüûïî']*$/;
+  let cityMsg = document.querySelector("#cityErrorMsg");
+
+  if (formDOM.city.value.match(cityFormat)) {
+    cityMsg.textContent = "La ville saisie semble valide.";
+    //return true;
+  } else {
+    cityMsg.textContent = "Veuillez saisir le nom d'une ville valide.";
+    //return false;
+  }
+}
+
+function emailCheck() {
+  let emailFormat =
+    /^[\w-\+\.\_]+(\.[\w-\+\.\_]+)*@[\w-\+\.\_]+(\.[\w\+\.\_]+)*(\.[A-Za-z]{2,})$/;
+  let emailMsg = document.querySelector("#emailErrorMsg");
+
+  if (formDOM.email.value.match(emailFormat)) {
+    emailMsg.textContent = "Votre adresse email est valide.";
+    return true;
+  } else {
+    emailMsg.textContent = "Veuillez saisir une adresse email valide.";
+    return false;
+  }
+}
