@@ -64,7 +64,7 @@ function addToCart(product) {
       name: product.name,
       color: productColors.value,
       quantity: Number(productQuantity.value),
-      price: Number(product.price),
+      //price: Number(product.price),
       image: product.imageUrl,
       altImage: product.altTxt,
     };
@@ -118,7 +118,6 @@ function addToCart(product) {
 
         // Scanning des indexes du tableau itemsInCart pour retrouver l'item dont on veut remplacer la quantité.
         for (i = 0; i < itemsInCart.length; i++) {
-          //MAP OU FIND
           if (
             itemsInCart[i].id === currentID &&
             itemsInCart[i].color === productColors.value
