@@ -50,10 +50,11 @@ function addToCart(product) {
     if (
       productColors.value === "" ||
       productQuantity.value == 0 ||
-      productQuantity.value > 100
+      productQuantity.value > 100 ||
+      productQuantity.value < 0
     ) {
       alert(
-        "Choississez une couleur et/ou une quantité entre 1 et 100 avant de valider votrecommande."
+        "Choississez une couleur et/ou une quantité entre 1 et 100 avant de valider votre commande."
       );
       return;
 
@@ -124,12 +125,20 @@ function addToCart(product) {
           ) {
             // On remplace la quantité de l'item dans le cart.
             itemsInCart[i].quantity = totalQuantity;
+
+            if (parseInt(totalQuantity) > 100) {
+              alert(
+                "La quantité que vous avez sélectionnée dépasse la limite autorisée. Veuillez réduire la quantité afin de ne pas dépasser les 100 unités."
+              );
+              return;
+            } else {
+              // On enregistre le changement de l'item du cart dans le cart.
+              localStorage.setItem("cartItem", JSON.stringify(itemsInCart));
+              console.log("The item's quantity has been updated.");
+              goToCart();
+            }
           }
         }
-        // On enregistre le changement de l'item du cart dans le cart.
-        localStorage.setItem("cartItem", JSON.stringify(itemsInCart));
-        console.log("The item's quantity has been updated.");
-        goToCart();
 
         // Si on ne trouve pas un même item dans le local storage alors on rajoute un item à la liste.
       } else {
@@ -167,6 +176,6 @@ function storeItemToCart(item, cart) {
 function goToCart() {
   let choice = confirm("Vous allez être redirigé vers votre panier.");
   if (choice) {
-    window.location = "http://127.0.0.1:5500/front/html/cart.html";
+    window.location = "./cart.html"; // √
   }
 }

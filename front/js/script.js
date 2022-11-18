@@ -1,7 +1,6 @@
 const apiURL = `http://localhost:3000/api/products`;
 
 // fetch tous les produits
-//method babacar -> var appelAPI = fetch(URL); const response = await appelAPI();
 fetch(apiURL)
   .then((response) => response.json())
   .then((products) => {
@@ -20,5 +19,3 @@ fetch(apiURL)
     }
   })
   .catch((error) => alert("Erreur : " + error));
-
-//products ca devient créer chaine de caractère sortir le inner HTML hors de la boucle (après)

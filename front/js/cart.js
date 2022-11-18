@@ -11,6 +11,7 @@ const inputEmail = document.querySelector("#email");
 // Déclaration variables pour le localstorage.
 let cart = getCart();
 let products = getItemId();
+console.log(products);
 let orderId;
 
 ///////////////////////////////////////////////////
